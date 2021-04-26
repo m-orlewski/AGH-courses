@@ -99,12 +99,12 @@ void GUIMyFrame1::m_b_prewitt_click( wxCommandEvent& event )
 	unsigned w = Img_Cpy.GetWidth();
 	unsigned h = Img_Cpy.GetHeight();
 
-	auto pixels1 = Img_Cpy.GetData();
-	std::vector<unsigned char> pixels_copy;
+	auto pixels = Img_Cpy.GetData();
+	auto pixels_copy = new unsigned char[w * h * 3];
 	double dx;
 
 	for (unsigned i = 0; i < w * h * 3; i++)
-		pixels_copy.push_back(pixels1[i]);
+		pixels_copy[i] = pixels[i];
 
 	for (unsigned x = 1; x < w - 1; x++)
 	{
@@ -113,17 +113,51 @@ void GUIMyFrame1::m_b_prewitt_click( wxCommandEvent& event )
 			for (unsigned i = 0; i < 3; i++)
 			{
 				dx = 0;
-				dx += pixels_copy[i + y * 3 * w + 3 * (x + 1)];
-				dx -= pixels_copy[i + y * 3 * w + 3 * (x - 1)];
-				dx += pixels_copy[i + (y + 1) * 3 * w + 3 * (x + 1)];
-				dx -= pixels_copy[i + (y + 1) * 3 * w + 3 * (x - 1)];
-				dx += pixels_copy[i + (y - 1) * 3 * w + 3 * (x + 1)];
-				dx -= pixels_copy[i + (y - 1) * 3 * w + 3 * (x - 1)];
-				pixels1[i + y * 3U * w + 3U * x] = fabs(dx);
+				dx += pixels_copy[3 * ((y + 1) * w + x) + i];
+				dx += pixels_copy[3 * ((y + 1) * w + x + 1) + i];
+				dx += pixels_copy[3 * ((y + 1) * w + x - 1) + i];
+				dx -= pixels_copy[3 * ((y - 1) * w + x ) + i];
+				dx -= pixels_copy[3 * ((y - 1) * w + x + 1) + i];
+				dx -= pixels_copy[3 * ((y - 1) * w + x - 1) + i];
+				pixels[3 * (y * w + x) + i] = fabs(dx);
 			}
 
 		}
 	}
+
+	delete[] pixels_copy;
+
+	//Img_Cpy = Img_Org.Copy();
+
+	//int temp = 0;
+	//int width = Img_Cpy.GetSize().x;
+	//int height = Img_Cpy.GetSize().y;
+	//int data = width * height * 3;
+
+	//unsigned char* point = Img_Cpy.GetData();
+	//unsigned char* back = new unsigned char[data];
+
+	//for (int i = 0; i < data; i++)
+	//	back[i] = point[i];
+	//for (int i = 1; i < height - 1; i++)
+	//{
+	//	for (int j = 1; j < width - 1; j++)
+	//	{
+	//		for (int k = 0; k < 3; k++)
+	//		{
+	//			temp = 0;
+	//			temp += back[k + i * 3 * width + 3 * (j + 1)];
+	//			temp -= back[k + i * 3 * width + 3 * (j - 1)];
+	//			temp += back[k + (i + 1) * 3 * width + 3 * (j + 1)];
+	//			temp -= back[k + (i + 1) * 3 * width + 3 * (j - 1)];
+	//			temp += back[k + (i - 1) * 3 * width + 3 * (j + 1)];
+	//			temp -= back[k + (i - 1) * 3 * width + 3 * (j - 1)];
+	//			point[k + i * 3 * width + 3 * j] = fabs(temp) / 3.0;
+	//		}
+	//	}
+	//}
+
+	//delete[] back;
 
 }
 
