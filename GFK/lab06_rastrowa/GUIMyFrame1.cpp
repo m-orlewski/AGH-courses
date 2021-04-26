@@ -126,39 +126,6 @@ void GUIMyFrame1::m_b_prewitt_click( wxCommandEvent& event )
 	}
 
 	delete[] pixels_copy;
-
-	//Img_Cpy = Img_Org.Copy();
-
-	//int temp = 0;
-	//int width = Img_Cpy.GetSize().x;
-	//int height = Img_Cpy.GetSize().y;
-	//int data = width * height * 3;
-
-	//unsigned char* point = Img_Cpy.GetData();
-	//unsigned char* back = new unsigned char[data];
-
-	//for (int i = 0; i < data; i++)
-	//	back[i] = point[i];
-	//for (int i = 1; i < height - 1; i++)
-	//{
-	//	for (int j = 1; j < width - 1; j++)
-	//	{
-	//		for (int k = 0; k < 3; k++)
-	//		{
-	//			temp = 0;
-	//			temp += back[k + i * 3 * width + 3 * (j + 1)];
-	//			temp -= back[k + i * 3 * width + 3 * (j - 1)];
-	//			temp += back[k + (i + 1) * 3 * width + 3 * (j + 1)];
-	//			temp -= back[k + (i + 1) * 3 * width + 3 * (j - 1)];
-	//			temp += back[k + (i - 1) * 3 * width + 3 * (j + 1)];
-	//			temp -= back[k + (i - 1) * 3 * width + 3 * (j - 1)];
-	//			point[k + i * 3 * width + 3 * j] = fabs(temp) / 3.0;
-	//		}
-	//	}
-	//}
-
-	//delete[] back;
-
 }
 
 void GUIMyFrame1::m_b_threshold_click( wxCommandEvent& event )
