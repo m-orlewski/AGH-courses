@@ -119,7 +119,7 @@ void GUIMyFrame1::m_b_prewitt_click( wxCommandEvent& event )
 				dx -= pixels_copy[3 * ((y - 1) * w + x ) + i];
 				dx -= pixels_copy[3 * ((y - 1) * w + x + 1) + i];
 				dx -= pixels_copy[3 * ((y - 1) * w + x - 1) + i];
-				pixels[3 * (y * w + x) + i] = fabs(dx);
+				pixels[3 * (y * w + x) + i] = fabs(dx) / 3.0;
 			}
 
 		}
@@ -148,7 +148,6 @@ void GUIMyFrame1::m_b_threshold_click( wxCommandEvent& event )
 
 void GUIMyFrame1::Contrast(int value)
 {
-	Refresh();
 	Img_Cpy = Img_Org.Copy();
 	int w = Img_Cpy.GetWidth();
 	int h = Img_Cpy.GetHeight();
@@ -185,7 +184,6 @@ void GUIMyFrame1::Repaint()
 
 void GUIMyFrame1::Brightness(int value)
 {
-	Refresh();
 	Img_Cpy = Img_Org.Copy();
 	int w = Img_Cpy.GetWidth();
 	int h = Img_Cpy.GetHeight();
