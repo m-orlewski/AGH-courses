@@ -6,8 +6,7 @@
 #include <array>
 #include <vector>
 
-float shepard(int i, int j, float d[100][3], int N);
-float wk(float x, float y, float xk, float yk);
+float shepard(float i, float j, float d[100][3], int N);
 
 void GUIMyFrame1::DrawMap(int N, float d[100][3], bool Contour, int MappingType, int NoLevels, bool ShowPoints)
 {
@@ -21,57 +20,73 @@ void GUIMyFrame1::DrawMap(int N, float d[100][3], bool Contour, int MappingType,
     memDC.SetBrush(*wxTRANSPARENT_BRUSH);
 
     std::array<std::array<float, 500>, 500> grid;
+    
 
     float f_max, f_min;
-    for (int i = 0; i < 500; i++)
+    f_min = f_max = d[0][2];
+    for (int i = 0; i < N; i++)
     {
-        for (int j = 0; j < 500; j++)
-        {
-            grid[i][499-j] = shepard(i, j, d, N);
-            if (i == 0 && j == 0)
-                f_min = f_max = grid[0][499];
-            else
-            {
-                if (grid[i][499-j] < f_min)
-                    f_min = grid[i][499-j];
-                if (grid[i][499-j] > f_max)
-                    f_max = grid[i][499-j];
-            }
-        }
+        if (d[i][2] < f_min)
+            f_min = d[i][2];
+        if (d[i][2] > f_max)
+            f_max = d[i][2];
     }
+
+    for (int x = 0; x < 500; x++)
+        for (int y = 0; y < 500; y++)
+            grid[y][x] = shepard(y, -x, d, N);
 
     if (MappingType)
     {
+        unsigned char* bits = new unsigned char[750000];
         for (int i = 0; i < 500; i++)
         {
             for (int j = 0; j < 500; j++)
             {
-                int w = (grid[i][j] - f_min) / (f_max - f_min) * 255;
-
+                int w = 255 - (grid[i][j] - f_min) / (f_max - f_min) * 255;
+                int y = j;
                 switch (MappingType)
                 {
                 case 1:
-                    memDC.SetPen(wxPen(wxColour(w, 0, 255 - w)));
+                    //memDC.SetPen(wxPen(wxColour(w, 0, 255 - w)));
+                    bits[3 * (i + 500 * y)] = w;
+                    bits[3 * (i + 500 * y) + 1] = 0;
+                    bits[3 * (i + 500 * y) + 2] = 255 - w;
                     break;
                 case 2:
-                    if (w < 255 / 2)
-                        memDC.SetPen(wxPen(wxColour(0, 2 * w, 255 - 2 * w)));
+                    if (w <= 255 / 2)
+                    {
+                        //memDC.SetPen(wxPen(wxColour(0, 2 * w, 255 - 2 * w)));
+                        bits[3 * (i + 500 * y)] = 0;
+                        bits[3 * (i + 500 * y) + 1] = 2 * w;
+                        bits[3 * (i + 500 * y) + 2] = 255 - 2 * w;
+                    }
                     else
-                        memDC.SetPen(wxPen(wxColour(0.5 * w, 2 * (255 - w), 0)));
+                    {
+                        //memDC.SetPen(wxPen(wxColour(0.5 * w, 2 * (255 - w), 0)));
+                        bits[3 * (i + 500 * y)] = 0.5 * w;
+                        bits[3 * (i + 500 * y) + 1] = 2 * (255 - w);
+                        bits[3 * (i + 500 * y) + 2] = 0;
+                    }
                     break;
                 case 3:
-                    memDC.SetPen(wxPen(wxColour(w, w, w)));
+                    //memDC.SetPen(wxPen(wxColour(w, w, w)));
+                    bits[3 * (i + 500 * y)] = 255-w;
+                    bits[3 * (i + 500 * y) + 1] = 255-w;
+                    bits[3 * (i + 500 * y) + 2] = 255-w;
                     break;
                 }
-
-                memDC.DrawPoint(i, 499-j);
             }
         }
+        wxImage tmp(500, 500, bits);
+        wxBitmap tmp2(tmp);
+        memDC.DrawBitmap(tmp2, 0, 0);
     }
 
     if (Contour)
     {
-        memDC.SetPen(wxPen(wxColour("black"), 1));
+        memDC.SetPen(wxPen(wxColour("black")));
+        memDC.SetBrush(*wxTRANSPARENT_BRUSH);
         for (int i = 0; i < NoLevels; i++)
         {
             float poziomica = f_min + (i + 1) * (f_max - f_min) / (NoLevels + 1.0);
@@ -131,44 +146,29 @@ void GUIMyFrame1::DrawMap(int N, float d[100][3], bool Contour, int MappingType,
     if (ShowPoints)
     {
         memDC.SetPen(*wxBLACK_PEN);
+        memDC.SetBrush(*wxTRANSPARENT_BRUSH);
         for (int i = 0; i < N; i++)
         {
             float x = (d[i][0] + 2.5) / 5.0 * 500;
-            float y = (d[i][1] + 2.5) / 5.0 * 500;
+            float y = (2.5 - d[i][1]) / 5.0 * 500;
             memDC.DrawLine(x - 5, y, x + 5, y);
             memDC.DrawLine(x, y - 5, x, y + 5);
         }
     }
 }
 
-float shepard(int i, int j, float d[100][3], int N)
+float shepard(float i, float j, float d[100][3], int N)
 {
-    float x = i / 100.0 - 2.5;
-    float y = j / 100.0 - 2.5;
-
-    int known_point = -1;
+    i = i / 100.0 - 2.5;
+    j = j / 100.0 + 2.5;
     float l = 0;
     float m = 0;
     for (int k = 0; k < N; k++)
     {
-        if (x == d[k][0] && y == d[k][1])
-        {
-            known_point = k;
-            break;
-        }
-
-        float w = wk(x, y, d[k][0], d[k][1]);
+        float w = 1.0 / ((i - d[k][0]) * (i - d[k][0]) + (j - d[k][1]) * (j - d[k][1]));
         l += w * d[k][2];
         m += w;
     }
 
-    if (known_point == -1)
-        return l / m;
-    else
-        return d[known_point][2];
-}
-
-float wk(float x, float y, float xk, float yk)
-{
-    return 1.0 / pow(sqrt((x - xk) * (x - xk) + (y - yk) * (y - yk)), 2);
+    return l / m;
 }
