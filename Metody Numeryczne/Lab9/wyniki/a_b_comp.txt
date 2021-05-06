@@ -1,0 +1,5 @@
+Porównanie współcznników dokładnych(1 kolumna) i oszacowanych(2 kolumna)
+      -0.125	      -0.125
+       0.125	       0.125
+    -0.03125	    -0.03125
+           0	-3.26156e-18
