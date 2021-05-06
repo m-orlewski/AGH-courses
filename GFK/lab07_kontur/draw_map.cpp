@@ -38,7 +38,7 @@ void GUIMyFrame1::DrawMap(int N, float d[100][3], bool Contour, int MappingType,
 
     if (MappingType)
     {
-        unsigned char* bits = new unsigned char[750000];
+        unsigned char* bits = new unsigned char[750000]{0};
         for (int i = 0; i < 500; i++)
         {
             for (int j = 0; j < 500; j++)
@@ -78,9 +78,9 @@ void GUIMyFrame1::DrawMap(int N, float d[100][3], bool Contour, int MappingType,
                 }
             }
         }
-        wxImage tmp(500, 500, bits);
-        wxBitmap tmp2(tmp);
-        memDC.DrawBitmap(tmp2, 0, 0);
+        wxImage img(500, 500, bits);
+        wxBitmap color_map(img);
+        memDC.DrawBitmap(color_map, 0, 0);
     }
 
     if (Contour)
