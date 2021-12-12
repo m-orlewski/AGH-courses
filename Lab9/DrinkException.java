@@ -1,0 +1,1 @@
+public class DrinkException extends Exception {}
