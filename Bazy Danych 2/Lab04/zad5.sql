@@ -1,0 +1,12 @@
+DROP FUNCTION dbo.fun5;
+GO
+
+CREATE FUNCTION dbo.fun5(@l int, @h int)
+RETURNS DATE
+AS
+BEGIN
+RETURN DATEADD(day, 1, GETDATE());
+END
+GO
+
+SELECT dbo.fun5(1, 5);
