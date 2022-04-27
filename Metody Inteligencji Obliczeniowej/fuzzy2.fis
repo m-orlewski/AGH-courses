@@ -1,0 +1,54 @@
+[System]
+Name='fuzzy2'
+Type='sugeno'
+Version=2.0
+NumInputs=2
+NumOutputs=1
+NumRules=12
+AndMethod='prod'
+OrMethod='probor'
+ImpMethod='prod'
+AggMethod='sum'
+DefuzzMethod='wtaver'
+
+[Input1]
+Name='Temperatura'
+Range=[0 30]
+NumMFs=4
+MF1='ZIMNO':'trimf',[-12.5 0 12.5]
+MF2='LETNIO':'trimf',[5 10 20]
+MF3='CIEPLO':'trimf',[15 20 30]
+MF4='GORACO':'trimf',[20 30 40]
+
+[Input2]
+Name='Wilgotnosc'
+Range=[0 100]
+NumMFs=4
+MF1='ZERO':'trimf',[-1 0 1]
+MF2='MALA':'trimf',[0 10 20]
+MF3='SREDNIA':'trimf',[10 40 70]
+MF4='DUZA':'trimf',[40 100 120]
+
+[Output1]
+Name='Intensywnosc_podlewania'
+Range=[0 100]
+NumMFs=5
+MF1='ZERO':'constant',[0]
+MF2='MALA':'constant',[25]
+MF3='SREDNIA':'constant',[50]
+MF4='DUZA':'constant',[75]
+MF5='MAX':'constant',[100]
+
+[Rules]
+1 2, 3 (1) : 1
+1 3, 2 (1) : 1
+1 4, 1 (1) : 1
+2 2, 4 (1) : 1
+2 3, 2 (1) : 1
+2 4, 1 (1) : 1
+3 2, 4 (1) : 1
+3 3, 3 (1) : 1
+3 4, 2 (1) : 1
+4 2, 5 (1) : 1
+4 3, 4 (1) : 1
+4 4, 3 (1) : 1
